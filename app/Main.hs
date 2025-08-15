@@ -1,10 +1,11 @@
 module Main (main) where
 
 import Lib
-import System.Environment (getArgs)
+import System.Environment (getArgs, getEnv)
 
-pathToPkgs :: String
-pathToPkgs = "packages.txt"
+pathToPkgs :: IO String
+pathToPkgs =
+  getEnv "PKG_PATH_TXT" >>= return
 
 handleArgs :: [String] -> [String] -> IO [String]
 handleArgs pkgs (cmd : xs)
@@ -26,10 +27,11 @@ handleArgs pkgs _ = do
 main :: IO ()
 main = do
   args <- getArgs
-  contents <- getListOfPkgs pathToPkgs
+  path <- pathToPkgs
+  contents <- getListOfPkgs path
   newPkgs <- handleArgs contents args
 
-  writeListToFile pathToPkgs newPkgs
+  writeListToFile path newPkgs
 
   return ()
 
